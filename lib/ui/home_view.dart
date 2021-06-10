@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
@@ -62,12 +63,31 @@ class _HomeViewState extends State<HomeView> {
           width: MediaQuery.of(context).size.width,
           child: Stack(
             children: [
-              GoogleMap(
-                initialCameraPosition: _cameraPosition,
-                mapType: MapType.normal,
-                onMapCreated: _onMapCreated,
-                myLocationEnabled: true,
-                markers: _markers,
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints.tightFor(width: 150,height: 50),
+                  child: ElevatedButton(
+                    onPressed:(){
+                      Navigator.pushNamed(context, '/second');
+                    },
+                    child: Text(
+                      'Second Screen'
+                    ),
+                  ),
+                ),
+              ),
+              ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.of(context).size.height - 100,
+                  ),
+                child: GoogleMap(
+                  initialCameraPosition: _cameraPosition,
+                  mapType: MapType.normal,
+                  onMapCreated: _onMapCreated,
+                  myLocationEnabled: true,
+                  markers: _markers,
+                ),
               ),
             ],
           ),

@@ -1,4 +1,5 @@
 import 'package:appentus_app/ui/home_view.dart';
+import 'package:appentus_app/ui/second_view.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
       routes:
       {
         '/': (context) => HomeView(),
-
+        '/second': (context) => SecondView(),
       },
     );
   }
