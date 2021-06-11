@@ -11,7 +11,6 @@ class SecondView extends StatefulWidget {
 }
 
 class _SecondViewState extends State<SecondView> {
-
   Controller controller = Controller();
   Future<List<ApiData>> list;
 
@@ -28,18 +27,18 @@ class _SecondViewState extends State<SecondView> {
       appBar: AppBar(
         title: Text('Second Screen'),
       ),
-      body: FutureBuilder<List<Season>>(
-        future: seasons,
+      body: FutureBuilder<List<ApiData>>(
+        future: list,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return GridView.builder(
                 itemCount: snapshot.data.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
                 ),
                 itemBuilder: (context, index) {
-                  return Text("${snapshot.data[index].season_name}");
-                }
-            );
+                  return Text("${snapshot.data[index].author}");
+                });
           } else if (snapshot.hasError) {
             return Text("Error");
           }

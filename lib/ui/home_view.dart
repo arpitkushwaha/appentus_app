@@ -1,3 +1,4 @@
+import 'package:appentus_app/logic/models/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -5,6 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
 class HomeView extends StatefulWidget {
+
   const HomeView({Key key}) : super(key: key);
 
   @override
@@ -12,6 +14,7 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
+
   CameraPosition _cameraPosition;
   LatLng current_lat_long;
   Set<Marker> _markers = {};
@@ -56,6 +59,10 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
+
+    User user = ModalRoute.of(context).settings.arguments;
+    print("Image: ${user.image}, Name: ${user.name}");
+
     return SafeArea(
       child: Scaffold(
         body: Container(
