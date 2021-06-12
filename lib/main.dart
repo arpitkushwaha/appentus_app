@@ -22,7 +22,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    initialize();
+    databaseConnect();
   }
 
   @override
@@ -33,8 +33,7 @@ class _MyAppState extends State<MyApp> {
         primarySwatch: Colors.blue,
       ),
       routes: {
-        '/': (context) => SignupView(),
-        // '/': (context) => SignupView(),
+        '/': (context) => LoginView(),
         '/second': (context) => SecondView(),
         '/login': (context) => LoginView(),
         '/signup': (context) => SignupView(),
@@ -43,7 +42,7 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  void initialize() {
-    DB.connectToDB();
+  void databaseConnect() {
+    DB.initialize();
   }
 }

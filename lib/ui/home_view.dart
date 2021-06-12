@@ -6,7 +6,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
 class HomeView extends StatefulWidget {
-
   const HomeView({Key key}) : super(key: key);
 
   @override
@@ -14,10 +13,9 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-
-  CameraPosition _cameraPosition;
+  CameraPosition _initialCameraPosition;
   LatLng current_lat_long;
-  Set<Marker> _markers = {};
+  Set<Marker> _markersSet = {};
   GoogleMapController _controller;
   Location _location = Location();
   LocationData current_location_data;
@@ -26,7 +24,7 @@ class _HomeViewState extends State<HomeView> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _cameraPosition = CameraPosition(target: LatLng(0, 0), zoom: 10.0);
+    _initialCameraPosition = CameraPosition(target: LatLng(0, 0), zoom: 10.0);
     getCurrentLocationData();
   }
 
@@ -35,17 +33,17 @@ class _HomeViewState extends State<HomeView> {
     setState(() {
       current_lat_long = LatLng(
           current_location_data.latitude, current_location_data.longitude);
-      _cameraPosition = CameraPosition(target: current_lat_long, zoom: 15.0);
+      _initialCameraPosition = CameraPosition(target: current_lat_long, zoom: 15.0);
       if (_controller != null)
         _controller
-            .animateCamera(CameraUpdate.newCameraPosition(_cameraPosition));
+            .animateCamera(CameraUpdate.newCameraPosition(_initialCameraPosition));
 
-      _markers.add(Marker(
+      _markersSet.add(Marker(
         markerId: MarkerId("current"),
         position: current_lat_long,
         infoWindow: InfoWindow(
-          title: '${current_lat_long.latitude}, ${current_lat_long.longitude}'
-        ),
+            title:
+                '${current_lat_long.latitude}, ${current_lat_long.longitude}'),
       ));
     });
   }
@@ -53,15 +51,13 @@ class _HomeViewState extends State<HomeView> {
   void _onMapCreated(GoogleMapController _cntlr) {
     _controller = _cntlr;
     _controller.animateCamera(
-      CameraUpdate.newCameraPosition(_cameraPosition),
+      CameraUpdate.newCameraPosition(_initialCameraPosition),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-
     User user = ModalRoute.of(context).settings.arguments;
-    print("Image: ${user.image}, Name: ${user.name}");
 
     return SafeArea(
       child: Scaffold(
@@ -70,35 +66,58 @@ class _HomeViewState extends State<HomeView> {
           width: MediaQuery.of(context).size.width,
           child: Stack(
             children: [
+
               Align(
                 alignment: Alignment.bottomCenter,
-                child: ConstrainedBox(
-                  constraints: BoxConstraints.tightFor(width: 150,height: 50),
-                  child: ElevatedButton(
-                    onPressed:(){
-                      Navigator.pushNamed(context, '/second');
-                    },
-                    child: Text(
-                      'Second Screen'
-                    ),
-                  ),
-                ),
+                child: _buildSecondScreenBtn(),
               ),
-              ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxHeight: MediaQuery.of(context).size.height - 100,
-                  ),
-                child: GoogleMap(
-                  initialCameraPosition: _cameraPosition,
-                  mapType: MapType.normal,
-                  onMapCreated: _onMapCreated,
-                  myLocationEnabled: true,
-                  markers: _markers,
-                ),
-              ),
+
+              _buildGoogleMap(),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildSecondScreenBtn() {
+    return ConstrainedBox(
+      constraints: BoxConstraints.tightFor(width: 180, height: 50),
+      child: ElevatedButton(
+        onPressed: () {
+          Navigator.pushNamed(context, '/second');
+        },
+        style: ElevatedButton.styleFrom(
+            padding: EdgeInsets.only(top: 6, left: 15, right: 15, bottom: 6),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30.0),
+            ),
+            primary: Colors.black,
+            elevation: 5.0),
+        child: Text(
+          'Second Screen',
+          style: TextStyle(
+            color: Colors.white,
+            letterSpacing: 1.5,
+            fontSize: 15.0,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGoogleMap() {
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height - 100,
+      ),
+      child: GoogleMap(
+        initialCameraPosition: _initialCameraPosition,
+        mapType: MapType.normal,
+        onMapCreated: _onMapCreated,
+        myLocationEnabled: true,
+        markers: _markersSet,
       ),
     );
   }

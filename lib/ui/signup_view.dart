@@ -14,62 +14,73 @@ class SignupView extends StatefulWidget {
 }
 
 class _SignupViewState extends State<SignupView> {
-  bool circular = false;
-  PickedFile _imageFile;
-  Controller controller = Controller();
-  final ImagePicker _picker = ImagePicker();
-  final _globalkey = GlobalKey<FormState>();
+
   TextEditingController _name = TextEditingController();
   TextEditingController _email = TextEditingController();
   TextEditingController _password = TextEditingController();
   TextEditingController _number = TextEditingController();
-
+  Controller controller = Controller();
+  PickedFile _userImageFile;
+  final ImagePicker _imagePick = ImagePicker();
+  final _globalkey = GlobalKey<FormState>();
+  
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Signup'),
-      ),
-      body: Form(
-        key: _globalkey,
-        child: ListView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-          children: <Widget>[
-            imageProfile(),
-            SizedBox(
-              height: 20,
-            ),
-            _buildTF("Name", _name),
-            SizedBox(
-              height: 20,
-            ),
-            _buildTF("Email", _email),
-            SizedBox(
-              height: 20,
-            ),
-            _buildTF("Password", _password),
-            SizedBox(
-              height: 20,
-            ),
-            _buildTF("Number", _number),
-            SizedBox(
-              height: 20,
-            ),
-            _buildSignupBtn(),
-          ],
+    return SafeArea(
+      child: Scaffold(
+        body: Form(
+          key: _globalkey,
+          child: ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+            children: <Widget>[
+              userImage(),
+              SizedBox(
+                height: 15,
+              ),
+              Center(
+                child: Text(
+                  'Signup',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 30,
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              _buildTF("Name", _name),
+              SizedBox(
+                height: 20,
+              ),
+              _buildTF("Email", _email),
+              SizedBox(
+                height: 20,
+              ),
+              _buildTF("Password", _password),
+              SizedBox(
+                height: 20,
+              ),
+              _buildTF("Number", _number),
+              SizedBox(
+                height: 20,
+              ),
+              _buildSignupBtn(),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget imageProfile() {
+  Widget userImage() {
     return Center(
       child: Stack(children: <Widget>[
         CircleAvatar(
-          radius: 80.0,
-          backgroundImage: _imageFile == null
-              ? AssetImage("assets/images/avatar.png")
-              : FileImage(File(_imageFile.path)),
+          radius: 50.0,
+          backgroundImage: _userImageFile == null
+              ? AssetImage("assets/images/man.png")
+              : FileImage(File(_userImageFile.path)),
         ),
         Positioned(
           bottom: 20.0,
@@ -83,7 +94,7 @@ class _SignupViewState extends State<SignupView> {
             },
             child: Icon(
               Icons.camera_alt,
-              color: Colors.teal,
+              color: Colors.white,
               size: 28.0,
             ),
           ),
@@ -103,29 +114,30 @@ class _SignupViewState extends State<SignupView> {
       child: Column(
         children: <Widget>[
           Text(
-            "Choose Profile photo",
+            "Choose photo from",
             style: TextStyle(
               fontSize: 20.0,
+              fontWeight: FontWeight.bold,
             ),
           ),
           SizedBox(
-            height: 20,
+            height: 10,
           ),
           Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
             TextButton.icon(
-              icon: Icon(Icons.camera),
+              icon: Icon(Icons.camera,),
               onPressed: () {
-                takePhoto(ImageSource.camera);
+                takeImageFromCamera(ImageSource.camera);
               },
               label: Text("Camera"),
             ),
             SizedBox(
-              width: 40,
+              width: 30,
             ),
             TextButton.icon(
               icon: Icon(Icons.image),
               onPressed: () {
-                takePhoto(ImageSource.gallery);
+                takeImageFromCamera(ImageSource.gallery);
               },
               label: Text("Gallery"),
             ),
@@ -135,16 +147,15 @@ class _SignupViewState extends State<SignupView> {
     );
   }
 
-  void takePhoto(ImageSource source) async {
-    final pickedFile = await _picker.getImage(
+  void takeImageFromCamera(ImageSource source) async {
+    final pickedFile = await _imagePick.getImage(
       source: source,
     );
     setState(() {
-      if (pickedFile != null) _imageFile = pickedFile;
+      if (pickedFile != null) _userImageFile = pickedFile;
       Navigator.pop(context);
     });
   }
-
   Widget _buildTF(String name, TextEditingController _cntrl) {
     return TextFormField(
       controller: _cntrl,
@@ -152,7 +163,18 @@ class _SignupViewState extends State<SignupView> {
         if (value.isEmpty) return "$name can't be empty";
         return null;
       },
-      decoration: InputDecoration(hintText: "Enter $name"),
+      decoration: InputDecoration(
+        hintText: "Enter $name",
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.all(
+            const Radius.circular(15.0),
+          ),
+          borderSide: BorderSide(
+            color: Colors.black,
+            width: 2,
+          ),
+        ),
+      ),
     );
   }
 
@@ -164,29 +186,26 @@ class _SignupViewState extends State<SignupView> {
         onPressed: () async {
           if (_globalkey.currentState.validate()) {
 
-            if(_imageFile==null)
-              {
-                print("Image not selected");
-                ScaffoldMessenger.of(context)
-                    .showSnackBar(SnackBar(content: Text('Image not selected. Please select an image')));
-                return;
-              }
+            if(_userImageFile==null)
+            {
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text('Image must be selected')));
+              return;
+            }
 
             User user = User(
                 id: null,
                 name: _name.text,
                 email: _email.text,
-                image: _imageFile.path,
+                image: _userImageFile.path,
                 number: _number.text,
                 password: _password.text);
 
-            int flag = await controller.saveDataInDB(user);
+            int flag = await controller.signup(user);
             if (flag == 0) {
-              print('User Already Exists');
               ScaffoldMessenger.of(context)
                   .showSnackBar(SnackBar(content: Text('This email is already registered')));
             } else {
-              print("User Successfully Registered");
               ScaffoldMessenger.of(context)
                   .showSnackBar(SnackBar(content: Text('Registration Completed Successfully')));
               Navigator.pushNamed(context, "/login");
@@ -213,3 +232,4 @@ class _SignupViewState extends State<SignupView> {
     );
   }
 }
+
