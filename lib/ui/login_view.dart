@@ -1,3 +1,4 @@
+
 import 'package:appentus_app/logic/models/user.dart';
 import 'package:appentus_app/logic/services/controller.dart';
 import 'package:flutter/cupertino.dart';
@@ -12,10 +13,10 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
+  Controller _controller = Controller();
   final _globalkey = GlobalKey<FormState>();
   TextEditingController _email = TextEditingController();
   TextEditingController _password = TextEditingController();
-  Controller controller = Controller();
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +45,7 @@ class _LoginViewState extends State<LoginView> {
                         SizedBox(
                           child: DefaultTextStyle(
                             style: const TextStyle(
-                              fontSize: 30.0,
+                              fontSize: 28.0,
                               color: Colors.black87,
                               fontWeight: FontWeight.bold,
                             ),
@@ -120,7 +121,7 @@ class _LoginViewState extends State<LoginView> {
         child: ElevatedButton(
           onPressed: () async {
             if (_globalkey.currentState.validate()) {
-              Map map = await controller.login(new User(
+              Map map = await _controller.login(new User(
                   id: null,
                   name: null,
                   email: _email.text,
@@ -134,7 +135,7 @@ class _LoginViewState extends State<LoginView> {
               } else {
                 ScaffoldMessenger.of(context)
                     .showSnackBar(SnackBar(content: Text('Logged in Successfully')));
-                Navigator.pushNamed(context, '/home',
+                Navigator.pushReplacementNamed(context, '/home',
                     arguments: User.fromJson(map));
               }
             }

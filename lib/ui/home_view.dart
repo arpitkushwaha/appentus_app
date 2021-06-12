@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:appentus_app/logic/models/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -61,6 +63,7 @@ class _HomeViewState extends State<HomeView> {
 
     return SafeArea(
       child: Scaffold(
+        appBar: _buildAppBar(user),
         body: Container(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
@@ -110,7 +113,7 @@ class _HomeViewState extends State<HomeView> {
   Widget _buildGoogleMap() {
     return ConstrainedBox(
       constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height - 100,
+        maxHeight: 600,
       ),
       child: GoogleMap(
         initialCameraPosition: _initialCameraPosition,
@@ -118,6 +121,30 @@ class _HomeViewState extends State<HomeView> {
         onMapCreated: _onMapCreated,
         myLocationEnabled: true,
         markers: _markersSet,
+      ),
+    );
+  }
+  
+  Widget _buildAppBar(User user)
+  {
+   return AppBar(
+      title: Container(
+          width: 200,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                user.name,
+                style: TextStyle(
+                  fontSize: 10,
+                ),
+              ),
+              CircleAvatar(
+                radius: 25,
+                backgroundImage: FileImage(File(user.image)),
+              ),
+            ],
+          )
       ),
     );
   }

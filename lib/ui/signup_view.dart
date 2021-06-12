@@ -15,11 +15,11 @@ class SignupView extends StatefulWidget {
 
 class _SignupViewState extends State<SignupView> {
 
+  Controller _controller = Controller();
   TextEditingController _name = TextEditingController();
   TextEditingController _email = TextEditingController();
   TextEditingController _password = TextEditingController();
   TextEditingController _number = TextEditingController();
-  Controller controller = Controller();
   PickedFile _userImageFile;
   final ImagePicker _imagePick = ImagePicker();
   final _globalkey = GlobalKey<FormState>();
@@ -201,14 +201,14 @@ class _SignupViewState extends State<SignupView> {
                 number: _number.text,
                 password: _password.text);
 
-            int flag = await controller.signup(user);
+            int flag = await _controller.signup(user);
             if (flag == 0) {
               ScaffoldMessenger.of(context)
                   .showSnackBar(SnackBar(content: Text('This email is already registered')));
             } else {
               ScaffoldMessenger.of(context)
                   .showSnackBar(SnackBar(content: Text('Registration Completed Successfully')));
-              Navigator.pushNamed(context, "/login");
+              Navigator.pop(context);
             }
           }
         },

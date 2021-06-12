@@ -1,4 +1,4 @@
-import 'package:appentus_app/logic/services/controller.dart';
+import 'package:appentus_app/logic/services/service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:appentus_app/logic/models/apidata.dart';
@@ -14,14 +14,14 @@ class SecondView extends StatefulWidget {
 }
 
 class _SecondViewState extends State<SecondView> {
-  Controller controller = Controller();
+  Service service = Service();
   Future<List<ApiData>> list;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    list = controller.getDataFromAPI();
+    list = service.getDataFromAPI();
   }
 
   @override
